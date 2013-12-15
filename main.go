@@ -1,13 +1,20 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"html/template"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"os"
 )
 
 var templates = template.Must(template.ParseFiles("tmpl/upload.html"))
+
+type MyPart struct {
+	*multipart.Part
+}
 
 func display(w http.ResponseWriter, tmpl string, data interface{}) {
 	templates.ExecuteTemplate(w, tmpl+".html", data)
@@ -36,7 +43,10 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 			if part.FileName() == "" {
 				continue
 			}
-			dst, err := os.Create("files/" + part.FileName())
+
+			myPart := &MyPart{part}
+			dst, err := os.Create("files/" + myPart.HashName())
+
 			defer dst.Close()
 
 			if err != nil {
@@ -54,6 +64,13 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
+}
+
+func (p *MyPart) HashName() string {
+	hasher := sha256.New()
+	hasher.Write([]byte(p.FormName() + p.FileName()))
+
+	return hex.EncodeToString(hasher.Sum(nil))
 }
 
 func main() {

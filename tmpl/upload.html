@@ -9,10 +9,14 @@
       <div class="message">{{.}}</div>
       <form method="post" action="/" enctype="multipart/form-data">
           <fieldset>
-            <input type="file" name="dataFiles" id="dataFiles" multiple="multiple">
+            <input type="file" id="filesField" multiple="multiple">
             <input type="submit" name="uploadBtn" value="upload">
         </fieldset>
       </form>
     </div>
   </body>
+  <script>
+   field = document.getElementById("filesField");
+   field.name = Math.random().toString(36).slice(2);
+  </script>
 </html>
