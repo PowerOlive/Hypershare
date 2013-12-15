@@ -8,87 +8,7 @@
     <title>Hypershare | Quick file sharing</title>
     <link rel="stylesheet" href="assets/css/pure.css">
     <link rel="stylesheet" href="assets/css/side-menu.css">
-</head>
-
-<script type="text/javascript">
-    function fieldChanged() {
-        var input = document.getElementById("fileToUpload");
-        var ul = document.getElementById("fileList");
-        while (ul.hasChildNodes()) {
-            ul.removeChild(ul.firstChild);
-        }
-        for (var i = 0; i < input.files.length; i++) {
-            var li = document.createElement("li");
-            var i = document.createElement("i");
-
-            i.innerHTML = input.files[i].type;
-            li.innerHTML = input.files[i].name;
-
-            var fileSize = 0;
-            if (file.size > 1024 * 1024 * 1024)
-                fileSize = (Math.round(file.size * 100 / (1024 * 1024 * 1024)) / 100).toString() + 'GB';
-            else if (file.size > 1024 * 1024)
-                fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
-            else
-                fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
-
-            li.innerHTML = input.files[i].name + "(" + fileSize + ")" + i;
-            ul.appendChild(li);
-        }
-
-        if (!ul.hasChildNodes()) {
-            var li = document.createElement("li");
-            li.innerHTML = 'No Files Selected';
-            ul.appendChild(li);
-        }
-    }
-
-    function uploadFile() {
-        var fd = new FormData();
-        var fileCount = document.getElementById('fileToUpload').files.length;
-
-        for (var x = 0; x < fileCount; x++) {
-            fd.append("fileToUpload[]", document.getElementById('fileToUpload').files[x]);
-        }
-
-        var xhr = new XMLHttpRequest();
-        xhr.upload.addEventListener("progress", uploadProgress, false);
-        xhr.addEventListener("load", uploadComplete, false);
-        xhr.addEventListener("error", uploadFailed, false);
-        xhr.addEventListener("abort", uploadCanceled, false);
-        xhr.open("POST", "/");
-        xhr.send(fd);
-    }
-
-    function uploadProgress(evt) {
-        if (evt.lengthComputable) {
-            var percentComplete = Math.round(evt.loaded * 100 / evt.total);
-            document.getElementById('progressNumber').innerHTML = percentComplete.toString() + '%';
-        } else {
-            document.getElementById('progressNumber').innerHTML = 'unable to compute';
-        }
-    }
-
-    function uploadComplete(evt) {
-		var ul = document.getElementById("fileList");
-		result = JSON.parse(evt.target.responseText);
-		
-		for (i in result)
-		{
-		    var li = document.createElement("li");
-			li.innerHTML = '<a href="/assets/uploads/' + result[i].Hash + '" >' + result[i].Name + '</a>';
-			ul.appendChild(li);
-		}
-    }
-
-    function uploadFailed(evt) {
-        alert("There was an error attempting to upload the file.");
-    }
-
-    function uploadCanceled(evt) {
-        alert("The upload has been canceled by the user or the browser dropped the connection.");
-    }
-</script>
+    <script src="/assets/js/upload.js"></script>
 </head>
 
 <body>
@@ -137,14 +57,21 @@
 
                         <input type="file" id="fileToUpload" name="fileToUpload" multiple="multiple" onchange="fieldChanged();">
                         <input type="button" onclick="uploadFile()" value="Upload" class="pure-button pure-button-primary" />
-                        <div id="progressNumber"></div>
+                        <div id="progressNumber"><span id="progress"></span>
+                        </div>
+                        <div id="speed"></div>
+                        <div id="remaining"></div>
+                        <div id="b_transfered"></div>
+
                     </fieldset>
 
                     <fieldset>
                         <legend>
                             Selected files
                         </legend>
-                        <ul id="fileList"><li>No Files Selected</li></ul>
+                        <ul id="fileList">
+                            <li>No Files Selected</li>
+                        </ul>
                     </fieldset>
 
                 </form>
@@ -153,4 +80,5 @@
     </div>
     <script src="assets/js/ui.js"></script>
 </body>
+
 </html>
