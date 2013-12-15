@@ -3,6 +3,8 @@ package main
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
+	"fmt"
 	"html/template"
 	"io"
 	"mime/multipart"
@@ -12,8 +14,13 @@ import (
 
 var templates = template.Must(template.ParseFiles("tmpl/upload.html"))
 
-type MyPart struct {
+type File struct {
 	*multipart.Part
+}
+
+type FileResult struct {
+	Name string
+	Hash string
 }
 
 func display(w http.ResponseWriter, tmpl string, data interface{}) {
@@ -34,6 +41,8 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		var files []FileResult
+
 		for {
 			part, err := reader.NextPart()
 			if err == io.EOF {
@@ -44,8 +53,8 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 
-			myPart := &MyPart{part}
-			dst, err := os.Create("assets/uploads/" + myPart.HashName())
+			file := &File{part}
+			dst, err := os.Create("assets/uploads/" + file.HashName())
 
 			defer dst.Close()
 
@@ -58,17 +67,29 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
+
+			fileResult := FileResult{
+				Name: file.FileName(),
+				Hash: file.HashName(),
+			}
+
+			files = append(files, fileResult)
 		}
 
-		display(w, "upload", "Upload successful.")
+		if jsonRes, err := json.Marshal(files); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		} else {
+			fmt.Fprintf(w, string(jsonRes))
+		}
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
 }
 
-func (p *MyPart) HashName() string {
+func (p *File) HashName() string {
 	hasher := sha256.New()
-	hasher.Write([]byte(p.FormName() + p.FileName()))
+	hasher.Write([]byte(p.FileName()))
 
 	return hex.EncodeToString(hasher.Sum(nil))
 }
