@@ -1,22 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Hypershare</title>
-  </head>
-  <body>
-    <div class="container">
-      <h1>Hypershare</h1>
-      <div class="message">{{.}}</div>
-      <form method="post" action="/" enctype="multipart/form-data">
-          <fieldset>
-            <input type="file" id="filesField" multiple="multiple">
-            <input type="submit" name="uploadBtn" value="upload">
-        </fieldset>
-      </form>
-    </div>
-  </body>
-  <script>
-   field = document.getElementById("filesField");
-   field.name = Math.random().toString(36).slice(2);
-  </script>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="Quickly share large files with friends.">
+		<title>Hypershare | Quick file sharing</title>
+		<link rel="stylesheet" href="assets/css/pure.css">
+		<link rel="stylesheet" href="assets/css/side-menu.css">
+	</head>
+	<body>
+		<div id="layout">
+			<!-- Menu toggle -->
+			<a href="#menu" id="menuLink" class="pure-menu-link"><span></span> </a>
+			<div id="menu">
+				<div class="pure-menu pure-menu-open">
+					<a class="pure-menu-heading" href="/">Hypershare</a>
+					<ul>
+						<li>
+							<a href="#upload">Upload files</a>
+						</li>
+						
+						<li>
+							<a href="#faq">FAQ</a>
+						</li>
+						<li class="menu-item-divided">
+							<a href="/assets/uploads">Browse files</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div id="main">
+				<div class="header">
+					<h1>Hypershare</h1>
+					<h2>Share large files with friends</h2>
+				</div>
+				<div class="content">
+					<h2 class="content-subhead" id="faq">How does it work?</h2>
+					<p>
+						Simply upload some files to Hypershare and share the download URL with your friends.
+						Files are automaticly removed after 7 days.
+					</p>
+					<h2 class="content-subhead">Is there a upload limit?</h2>
+					<p>
+						No, Maybe. We don't enforce a file size limit. We don't set limits on the actual file upload, there could however be a hardware limit which prevents very large file uploads.
+					</p>
+					<h2 class="content-subhead" id="upload">Upload</h2>
+					<form class="pure-form pure-form-stacked" method="post" action="/" enctype="multipart/form-data">
+						<fieldset>
+							<legend>
+								File upload
+							</legend>
+							
+							<input type="file" id="filesField" multiple="multiple">
+							<button type="submit" class="pure-button pure-button-primary">
+								Upload
+							</button>
+						</fieldset>
+					</form>
+				</div>
+			</div>
+		</div>
+		<script>
+			field = document.getElementById("filesField");
+			field.name = Math.random().toString(36).slice(2);
+		</script>
+		<script src="assets/js/ui.js"></script>
+	</body>
 </html>

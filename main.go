@@ -45,7 +45,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			myPart := &MyPart{part}
-			dst, err := os.Create("files/" + myPart.HashName())
+			dst, err := os.Create("assets/uploads/" + myPart.HashName())
 
 			defer dst.Close()
 
@@ -76,7 +76,7 @@ func (p *MyPart) HashName() string {
 func main() {
 	http.HandleFunc("/", uploadHandler)
 
-	http.Handle("/files/", http.StripPrefix("/files/", http.FileServer(http.Dir("files"))))
+	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 
 	http.ListenAndServe(":80", nil)
 }
