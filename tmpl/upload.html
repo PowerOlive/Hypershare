@@ -12,7 +12,6 @@
 
 <script type="text/javascript">
     function fieldChanged() {
-		alert("changed");
         var input = document.getElementById("fileToUpload");
         var ul = document.getElementById("fileList");
         while (ul.hasChildNodes()) {
@@ -45,7 +44,6 @@
     }
 
     function uploadFile() {
-		alert("upload click");
         var fd = new FormData();
         var fileCount = document.getElementById('fileToUpload').files.length;
 
@@ -72,8 +70,15 @@
     }
 
     function uploadComplete(evt) {
-        /* This event is raised when the server send back a response */
-        alert(evt.target.responseText);
+		var ul = document.getElementById("fileList");
+		result = JSON.parse(evt.target.responseText);
+		
+		for (i in result)
+		{
+		    var li = document.createElement("li");
+			li.innerHTML = '<a href="/assets/uploads/' + result[i].Hash + '" >' + result[i].Name + '</a>';
+			ul.appendChild(li);
+		}
     }
 
     function uploadFailed(evt) {
@@ -139,8 +144,9 @@
                         <legend>
                             Selected files
                         </legend>
-                        <ul id="fileList"></ul>
+                        <ul id="fileList"><li>No Files Selected</li></ul>
                     </fieldset>
+
                 </form>
             </div>
         </div>
