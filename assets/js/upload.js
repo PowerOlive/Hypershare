@@ -32,18 +32,20 @@ function bytesToSize(bytes) {
     return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
 };
 
-function fieldChanged() {
-    var input = document.getElementById("fileToUpload");
-    var ul = document.getElementById("fileList");
+function clearList() {
+	var ul = document.getElementById("fileList");
     while (ul.hasChildNodes()) {
         ul.removeChild(ul.firstChild);
     }
+}
+function fieldChanged() {
+    var input = document.getElementById("fileToUpload");
+    var ul = document.getElementById("fileList");
+
+	clearList();
     for (var i = 0; i < input.files.length; i++) {
         var li = document.createElement("li");
-        var i = document.createElement("i");
-
-        i.innerHTML = input.files[i].type;
-        li.innerHTML = input.files[i].name;
+		var file = input.files.item(i); 
 
         var fileSize = 0;
         if (file.size > 1024 * 1024 * 1024)
@@ -53,7 +55,7 @@ function fieldChanged() {
         else
             fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
 
-        li.innerHTML = input.files[i].name + "(" + fileSize + ")" + i;
+        li.innerHTML = "<strong>" + file.name + "</strong> (" + fileSize + ") " + "<i>" + file.type + "</i>";
         ul.appendChild(li);
     }
 
@@ -119,31 +121,25 @@ function uploadProgress(e) {
         var iBytesTransfered = bytesToSize(iBytesUploaded);
 
         document.getElementById('progressNumber').innerHTML = iPercentComplete.toString() + '%';
-        document.getElementById('progress').style.width = (iPercentComplete * 4).toString() + 'px';
         document.getElementById('b_transfered').innerHTML = iBytesTransfered;
-        if (iPercentComplete == 100) {
-            var oUploadResponse = document.getElementById('upload_response');
-            oUploadResponse.innerHTML = '<h1>Please wait...processing</h1>';
-            oUploadResponse.style.display = 'block';
-        }
     } else {
         document.getElementById('progress').innerHTML = 'unable to compute';
     }
 }
 
 function uploadFinish(e) {
+	alert("Finished");
     var ul = document.getElementById("fileList");
-    result = JSON.parse(evt.target.responseText);
+    result = JSON.parse(e.target.responseText);
 
+	clearList();
     for (i in result) {
-        var li = document.createElement("li");
-        li.innerHTML = '<a href="/assets/uploads/' + result[i].Hash + '" >' + result[i].Name + '</a>';
+		var li = document.createElement("li");
+        li.innerHTML = '<a href="/assets/uploads/' + result[i].Hash + '" >' + result[i].Name + '</a> <i>Uploaded</i>';
         ul.appendChild(li);
     }
 
-    document.getElementById('progress_percent').innerHTML = '100%';
-    document.getElementById('progress').style.width = '400px';
-    document.getElementById('filesize').innerHTML = sResultFileSize;
+    document.getElementById('progressNumber').innerHTML = '100%';
     document.getElementById('remaining').innerHTML = '00:00:00';
 
     clearInterval(oTimer);

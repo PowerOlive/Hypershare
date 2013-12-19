@@ -99,5 +99,5 @@ func main() {
 
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":9999", nil)
 }
